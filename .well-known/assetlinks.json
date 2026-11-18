@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.dnhfun.boxsorter",
+      "sha256_cert_fingerprints": [
+        "8D:61:45:D8:8D:28:D9:2C:79:30:38:4A:3A:B7:89:84:68:4F:A5:5A:8D:CD:57:30:BB:9E:D7:CB:97:B9:6C:FD",
+        "CD:15:90:62:7C:11:E1:C2:84:D0:FC:03:48:70:B9:75:C7:77:26:93:03:8A:E2:9E:6A:41:D6:37:84:9E:D7:13"
+      ]
+    }
+  }
+]

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoxSorter - a friend's result</title>
+<meta name="description" content="A friend shared a BoxSorter daily challenge result. Can you beat it?">
+<meta property="og:title" content="BoxSorter Daily - can you beat it?">
+<meta property="og:description" content="A friend shared a BoxSorter daily challenge result.">
+<meta property="og:image" content="https://dnhfun.github.io/icon.png">
+<link rel="icon" href="../icon.png">
+<style>
+  :root { --bg: #140C30; --card: #26305A; --row: #313C6E; --text: #FFFFFF; --muted: #B8C1E0; --gold: #FFD34D; --link: #8FB8FF; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+         font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
+  main { width: 100%; max-width: 520px; background: var(--card); border-radius: 28px; padding: 32px 24px; text-align: center;
+         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45); }
+  .icon { width: 96px; height: 96px; border-radius: 22px; }
+  h1 { margin: 14px 0 2px; font-size: 30px; letter-spacing: 1px; color: var(--gold); }
+  .day { color: var(--muted); font-weight: 700; margin: 0 0 6px; letter-spacing: 1px; }
+  .type { font-size: 24px; font-weight: 800; margin: 0 0 18px; }
+  .blocks { background: var(--row); border-radius: 18px; padding: 16px 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+            max-width: 380px; margin: 0 auto 18px; }
+  .block { width: 38px; height: 38px; border-radius: 9px; box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.22), inset 0 4px 0 rgba(255, 255, 255, 0.25); }
+  .stats { font-size: 22px; font-weight: 700; margin: 0 0 6px; }
+  .stats b { color: var(--gold); }
+  .ask { color: var(--muted); font-size: 19px; margin: 0 0 22px; }
+  .btn { display: block; max-width: 340px; margin: 0 auto 12px; color: #fff; font-weight: 800; text-decoration: none; font-size: 20px;
+         padding: 14px 20px; border-radius: 18px; }
+  .play { background: #34C759; border-bottom: 5px solid #23913F; }
+  .open { background: #3B82F6; border-bottom: 5px solid #2563C4; display: none; }
+  footer { margin-top: 22px; font-size: 15px; color: var(--muted); }
+  footer a { color: var(--link); }
+</style>
+</head>
+<body>
+<main>
+  <img class="icon" src="../icon.png" alt="BoxSorter icon">
+  <h1>FRIEND'S RESULT</h1>
+  <div id="result">
+    <p class="day" id="day"></p>
+    <p class="type" id="type"></p>
+    <div class="blocks" id="blocks"></div>
+    <p class="stats" id="stats"></p>
+    <p class="ask">Can you beat it?</p>
+  </div>
+  <p class="ask" id="broken" style="display:none">This result link looks broken, but the game is right here:</p>
+  <a class="btn open" id="open" href="#">Open in BoxSorter</a>
+  <a class="btn play" href="https://play.google.com/store/apps/details?id=com.dnhfun.boxsorter">Get it on Google Play</a>
+  <footer>BoxSorter by DnhFun &middot; <a href="https://sites.google.com/view/dnhfun">Privacy Policy</a> &middot; <a href="../terms.html">Terms</a></footer>
+</main>
+<script>
+// The same link the game makes (ShareLinks.cs): ?k=d&d=yyyymmdd&y=type&t=seconds&m=moves&c=colors.in.order
+// Phones with the game open the game itself (Android App Links); this page is for everybody else.
+(function () {
+  var TYPES = ["MYSTERY BLOCKS", "MOVE LIMIT", "TIME ATTACK", "RACE", "NO HELP", "MEMORY", "SEAL ORDER", "BOMB",
+               "PERFECT", "QUICK MOVES", "IN THE DARK", "TIRED TUBES", "COLOR HUNT", "GHOST RACE"];
+  var COLORS = ["E53935", "1E66D0", "FDD835", "2E9D44", "7B2CBF", "FB8C00", "22C7E0", "FF5FA2", "ECF0F4", "7A4E2D", "A6E22E", "343740", "B39DFF"];
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var q = new URLSearchParams(location.search);
+  function num(key, max) {
+    var s = q.get(key);
+    if (s === null || !/^[0-9]{1,9}$/.test(s)) return -1;
+    var n = parseInt(s, 10);
+    return n <= max ? n : -1;
+  }
+  var date = num("d", 22001231), type = num("y", TYPES.length - 1), secs = num("t", 86400), moves = num("m", 99999);
+  var year = Math.floor(date / 10000), month = Math.floor(date / 100) % 100, day = date % 100;
+  var okDate = year >= 2020 && month >= 1 && month <= 12 && day >= 1 && day <= new Date(year, month, 0).getDate();
+  var colors = (q.get("c") || "").split(".").filter(function (x) { return x !== ""; });
+  var okColors = colors.every(function (x) { return /^[0-9]{1,2}$/.test(x) && parseInt(x, 10) < COLORS.length; });
+  if (q.get("k") !== "d" || !okDate || type < 0 || secs < 0 || moves < 0 || !okColors) {
+    document.getElementById("result").style.display = "none";
+    document.getElementById("broken").style.display = "block";
+  } else {
+    document.getElementById("day").textContent = "DAILY CHALLENGE · " + MONTHS[month - 1].toUpperCase() + " " + day + ", " + year;
+    document.getElementById("type").textContent = TYPES[type] + " ✅";
+    var box = document.getElementById("blocks");
+    colors.slice(0, 30).forEach(function (c) {
+      var b = document.createElement("div");
+      b.className = "block";
+      b.style.background = "#" + COLORS[parseInt(c, 10)];
+      box.appendChild(b);
+    });
+    if (colors.length === 0) box.style.display = "none";
+    var clock = Math.floor(secs / 60) + ":" + ("0" + (secs % 60)).slice(-2);
+    var stats = document.getElementById("stats");
+    stats.appendChild(document.createTextNode("⏱️ "));
+    var t = document.createElement("b"); t.textContent = clock; stats.appendChild(t);
+    stats.appendChild(document.createTextNode("   🔁 "));
+    var m = document.createElement("b"); m.textContent = moves; stats.appendChild(m);
+    stats.appendChild(document.createTextNode(moves === 1 ? " move" : " moves"));
+  }
+  // Android: a button that opens the game (or Google Play, when the game is not installed). Useful inside apps whose
+  // own browser shows the page instead of opening the game.
+  if (/Android/i.test(navigator.userAgent)) {
+    var store = "https://play.google.com/store/apps/details?id=com.dnhfun.boxsorter";
+    var open = document.getElementById("open");
+    open.href = "intent://dnhfun.github.io/r/" + location.search + "#Intent;scheme=https;package=com.dnhfun.boxsorter;S.browser_fallback_url="
+                + encodeURIComponent(store) + ";end";
+    open.style.display = "block";
+  }
+})();
+</script>
+</body>
+</html>
